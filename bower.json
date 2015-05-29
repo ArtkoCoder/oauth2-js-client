@@ -1,0 +1,29 @@
+{
+  "name": "oauth2-js-client",
+  "version": "0.2.0",
+  "homepage": "https://github.com/ArtkoCoder/oauth2-js-client",
+  "authors": [
+    "Artur Kozubski <artkocoder@gmail.com>"
+  ],
+  "description": "OAuth 2.0 simple client with Bearer token support, based on the jQuery AJAX client.",
+  "main": "oauth2-client.js",
+  "moduleType": [
+    "amd"
+  ],
+  "keywords": [
+    "oauth2",
+    "javascript",
+    "client"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.3"
+  }
+}
