@@ -36,7 +36,7 @@ var Artkosoft = Artkosoft || {};
 !function(factory) {
 	if (typeof define === 'function' && define.amd) {
 		// Expose as an AMD module with jQuery dependency.
-		define('oauth2-client', ['jquery'], factory);
+		define(['jquery'], factory);
 	} else {
 		// No AMD-compliant loader.
 		factory(jQuery);
@@ -64,7 +64,7 @@ var Artkosoft = Artkosoft || {};
 
 		if (clientOptions.host.slice(-1) == '/') {
 			clientOptions.host = clientOptions.host.substr(0, clientOptions.host.length - 1);
-		}		
+		}
 		if (localStorage.getItem(clientOptions.localStoragePrefix + 'remember_user') !== null) {
 			clientOptions.rememberUser = localStorage.getItem(clientOptions.localStoragePrefix + 'remember_user');
 		}
@@ -75,7 +75,7 @@ var Artkosoft = Artkosoft || {};
 		 * Parses authenticate HTTP header returned by OAuth 2.0 server.
 		 *
 		 * @param {String} value
-		 * @param {String} scheme 
+		 * @param {String} scheme
 		 */
 		function parseAuthenticateHeader(value, scheme)
 		{
@@ -196,7 +196,7 @@ var Artkosoft = Artkosoft || {};
 				sessionStorage.removeItem(clientOptions.localStoragePrefix + 'access_token');
 				sessionStorage.removeItem(clientOptions.localStoragePrefix + 'token_type');
 				sessionStorage.removeItem(clientOptions.localStoragePrefix + 'token_expiry');
-				sessionStorage.removeItem(clientOptions.localStoragePrefix + 'token_scope');				
+				sessionStorage.removeItem(clientOptions.localStoragePrefix + 'token_scope');
 			}
 		}
 
@@ -205,7 +205,7 @@ var Artkosoft = Artkosoft || {};
 		 */
 		function refreshAccessToken()
 		{
-			// Refresh access token			
+			// Refresh access token
 			var tokenRequest = {
 				grant_type: 'refresh_token',
 				refresh_token: getRefreshToken()
@@ -216,7 +216,7 @@ var Artkosoft = Artkosoft || {};
 			if (clientOptions.clientId) tokenRequest.client_id = clientOptions.clientId;
 			if (clientOptions.clientSecret) tokenRequest.client_secret = clientOptions.clientSecret;
 
-			var successCallback = options.successCallback || null;			
+			var successCallback = options.successCallback || null;
 			options.successCallback = function(responseData, textStatus, jqXHR) {
 				// Saving received token in the local storage
 				saveTokenData(responseData);
@@ -335,7 +335,7 @@ var Artkosoft = Artkosoft || {};
 				localStorage.setItem(clientOptions.localStoragePrefix + 'remember_user', clientOptions.rememberUser);
 			}
 
-			var successCallback = options.successCallback || null;			
+			var successCallback = options.successCallback || null;
 			options.successCallback = function(responseData, textStatus, jqXHR) {
 				// OAuth 2.0 authorization - saving received authorization data in the local storage
 				saveTokenData(responseData);
@@ -351,7 +351,7 @@ var Artkosoft = Artkosoft || {};
 		 *
 		 * @param {Object} options AJAX call options
 		 */
-		this.revokeToken = function(options) {			
+		this.revokeToken = function(options) {
 			if (getAccessToken()) {
 				if (!options) options = {};
 				var successCallback = options.successCallback || null;
@@ -374,4 +374,6 @@ var Artkosoft = Artkosoft || {};
 			}
 		}
 	}
+
+	return Artkosoft.OAuth2Client;
 });
