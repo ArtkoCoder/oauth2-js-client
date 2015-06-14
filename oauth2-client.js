@@ -1,5 +1,5 @@
 /**
- * OAuth 2.0 Client v0.2
+ * OAuth 2.0 Client v0.2.2
  *
  * Copyright (c) 2015 Artkosoft - Artur Kozubski
  *
@@ -223,7 +223,7 @@ var Artkosoft = Artkosoft || {};
 
 				if (requestData !== null) {
 					// Call last failed request
-					sendRequest(requestData.path, requestData.method, requestData.requestBody, requestData.options);
+					that.send(requestData.path, requestData.method, requestData.requestBody, requestData.options);
 				} else {
 					// Call custom success callback
 					if (successCallback) successCallback(responseData, textStatus, jqXHR);
