@@ -1,5 +1,5 @@
 /**
- * OAuth 2.0 Client v0.2.3
+ * OAuth 2.0 Client v0.2.4
  *
  * Copyright (c) 2015 Artkosoft - Artur Kozubski
  *
@@ -375,6 +375,24 @@ var Artkosoft = Artkosoft || {};
 					options
 				);
 			}
+		}
+
+		/**
+		 * Returns current access token type.
+		 *
+		 * @returns {String}
+		 */
+		this.getCurrentTokenType = function() {
+			return getTokenType();
+		}
+
+		/**
+		 * Returns current access token.
+		 *
+		 * @returns {String}
+		 */
+		this.getCurrentAccessToken = function() {
+			return getAccessToken();
 		}
 	}
 
