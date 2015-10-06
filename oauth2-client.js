@@ -178,7 +178,7 @@ var Artkosoft = Artkosoft || {};
 				}
 			}
 			if (tokenData.expires_in || tokenData.token_expiry) {
-				setTimeout(refreshAccessToken, 1000 * (tokenData.expires_in ? tokenData.expires_in : tokenData.token_expiry));
+				sessionStorage.setItem(clientOptions.localStoragePrefix + 'timeoutId', setTimeout(refreshAccessToken, 1000 * (tokenData.expires_in ? tokenData.expires_in : tokenData.token_expiry)));
 			}
 		}
 
@@ -198,6 +198,13 @@ var Artkosoft = Artkosoft || {};
 				sessionStorage.removeItem(clientOptions.localStoragePrefix + 'token_expiry');
 				sessionStorage.removeItem(clientOptions.localStoragePrefix + 'token_scope');
 			}
+
+			var timeoutId = sessionStorage.getItem(clientOptions.localStoragePrefix + 'timeoutId');
+
+			if (timeoutId !== null) {
+				clearTimeout(parseInt(timeoutId));
+				sessionStorage.removeItem(clientOptions.localStoragePrefix + 'timeoutId');
+			}
 		}
 
 		/**
@@ -216,17 +223,15 @@ var Artkosoft = Artkosoft || {};
 			if (clientOptions.clientId) tokenRequest.client_id = clientOptions.clientId;
 			if (clientOptions.clientSecret) tokenRequest.client_secret = clientOptions.clientSecret;
 
-			var successCallback = options.successCallback || null;
-			options.successCallback = function(responseData, textStatus, jqXHR) {
-				// Saving received token in the local storage
-				saveTokenData(responseData);
+			var options = {
+				successCallback: function(responseData, textStatus, jqXHR) {
+					// Saving received token in the local storage
+					saveTokenData(responseData);
 
-				if (requestData !== null) {
-					// Call last failed request
-					that.send(requestData.path, requestData.method, requestData.requestBody, requestData.options);
-				} else {
-					// Call custom success callback
-					if (successCallback) successCallback(responseData, textStatus, jqXHR);
+					if (requestData !== null) {
+						// Call last failed request
+						that.send(requestData.path, requestData.method, requestData.requestBody, requestData.options);
+					}
 				}
 			};
 
@@ -283,12 +288,15 @@ var Artkosoft = Artkosoft || {};
 				// Call custom success callback
 				if (ajaxSettings.successCallback) ajaxSettings.successCallback(responseData, textStatus, jqXHR);
 			}).fail(function(jqXHR, textStatus, errorThrown) {
+				var runErrorCallback = true;
+
 				switch (jqXHR.status) {
 					case 400:
 						// BAD REQUEST
 						if (jqXHR.responseJSON.error && jqXHR.responseJSON.error == 'invalid_grant') {
 							// Probably token refresh request failed - run authorization logic
 							clientOptions.authorizeCallback();
+							runErrorCallback = false;
 						}
 						break;
 
@@ -301,12 +309,14 @@ var Artkosoft = Artkosoft || {};
 						if (authParams && authParams.error === undefined) {
 							// Run authorization logic
 							clientOptions.authorizeCallback();
+							runErrorCallback = false;
 						} else if (authParams && (authParams.error == 'invalid_token' || authParams.error == 'expired_token') && getRefreshToken()) {
 							removeAccessToken();
 							refreshAccessToken();
 						} else if (!getRefreshToken()) {
 							// Run authorization logic
 							clientOptions.authorizeCallback();
+							runErrorCallback = false;
 						}
 						break;
 
@@ -316,7 +326,14 @@ var Artkosoft = Artkosoft || {};
 				}
 
 				// Call custom error callback
-				if (ajaxSettings.errorCallback) ajaxSettings.errorCallback(jqXHR, textStatus, errorThrown);
+				if (runErrorCallback) {
+					if (ajaxSettings.errorCallback) ajaxSettings.errorCallback(jqXHR, textStatus, errorThrown);
+				} else {
+					// Remove all OAuth 2.0 authorization data from local storage
+					clearTokenData();
+					// Remove refresh token from local storage
+					removeRefreshToken();
+				}
 			}).always(function(responseData, textStatus, jqXHR) {
 				// Call custom complete callback
 				if (ajaxSettings.completeCallback) ajaxSettings.completeCallback(responseData, textStatus, jqXHR);
