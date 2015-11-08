@@ -180,11 +180,13 @@ var Artkosoft = Artkosoft || {};
 			if (tokenData.expires_in || tokenData.token_expiry) {
 				sessionStorage.setItem(
 					clientOptions.localStoragePrefix + 'timeoutId',
-					setTimeout(function() {
-						lastRequest = null;
-						refreshAccessToken();
-					},
-					1000 * (tokenData.expires_in ? tokenData.expires_in : tokenData.token_expiry))
+					setTimeout(
+						function() {
+							lastRequest = null;
+							refreshAccessToken();
+						},
+						1000 * (tokenData.expires_in ? tokenData.expires_in : tokenData.token_expiry)
+					)
 				);
 			}
 		}
