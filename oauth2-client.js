@@ -1,5 +1,5 @@
 /**
- * OAuth 2.0 Client v0.2.4
+ * OAuth 2.0 Client v0.2.6
  *
  * Copyright (c) 2015 Artkosoft - Artur Kozubski
  *
@@ -178,7 +178,14 @@ var Artkosoft = Artkosoft || {};
 				}
 			}
 			if (tokenData.expires_in || tokenData.token_expiry) {
-				sessionStorage.setItem(clientOptions.localStoragePrefix + 'timeoutId', setTimeout(refreshAccessToken, 1000 * (tokenData.expires_in ? tokenData.expires_in : tokenData.token_expiry)));
+				sessionStorage.setItem(
+					clientOptions.localStoragePrefix + 'timeoutId',
+					setTimeout(function() {
+						lastRequest = null;
+						refreshAccessToken();
+					},
+					1000 * (tokenData.expires_in ? tokenData.expires_in : tokenData.token_expiry))
+				);
 			}
 		}
 
