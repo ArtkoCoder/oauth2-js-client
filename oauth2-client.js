@@ -1,5 +1,5 @@
 /**
- * OAuth 2.0 Client v0.2.7
+ * OAuth 2.0 Client v0.2.8
  *
  * Copyright (c) 2015 Artkosoft - Artur Kozubski
  *
@@ -326,7 +326,7 @@ var Artkosoft = Artkosoft || {};
 							refreshAccessToken();
 						} else if (!getRefreshToken()) {
 							// Run authorization logic
-							clientOptions.authorizeCallback(authParams);
+							clientOptions.authorizeCallback(jqXHR.responseJSON);
 							runErrorCallback = false;
 						}
 						break;
