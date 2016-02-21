@@ -1,5 +1,5 @@
 /**
- * OAuth 2.0 Client v0.2.6
+ * OAuth 2.0 Client v0.2.7
  *
  * Copyright (c) 2015 Artkosoft - Artur Kozubski
  *
@@ -86,7 +86,9 @@ var Artkosoft = Artkosoft || {};
 
 			while (value.length) {
 				var term = regExp.exec(value);
+
 				value = value.substr(term[0].length);
+
 				if (!term[6] && term[7]) {
 					method = { scheme: term[1], params: {} };
 					methods.push(method);
@@ -304,7 +306,7 @@ var Artkosoft = Artkosoft || {};
 						// BAD REQUEST
 						if (jqXHR.responseJSON.error && jqXHR.responseJSON.error == 'invalid_grant') {
 							// Probably token refresh request failed - run authorization logic
-							clientOptions.authorizeCallback();
+							clientOptions.authorizeCallback(jqXHR.responseJSON);
 							runErrorCallback = false;
 						}
 						break;
@@ -317,14 +319,14 @@ var Artkosoft = Artkosoft || {};
 
 						if (authParams && authParams.error === undefined) {
 							// Run authorization logic
-							clientOptions.authorizeCallback();
+							clientOptions.authorizeCallback(authParams);
 							runErrorCallback = false;
 						} else if (authParams && (authParams.error == 'invalid_token' || authParams.error == 'expired_token') && getRefreshToken()) {
 							removeAccessToken();
 							refreshAccessToken();
 						} else if (!getRefreshToken()) {
 							// Run authorization logic
-							clientOptions.authorizeCallback();
+							clientOptions.authorizeCallback(authParams);
 							runErrorCallback = false;
 						}
 						break;
