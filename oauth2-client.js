@@ -1,5 +1,5 @@
 /**
- * OAuth 2.0 Client v0.2.8
+ * OAuth 2.0 Client v0.2.9
  *
  * Copyright (c) 2015 Artkosoft - Artur Kozubski
  *
@@ -300,6 +300,7 @@ var Artkosoft = Artkosoft || {};
 				if (ajaxSettings.successCallback) ajaxSettings.successCallback(responseData, textStatus, jqXHR);
 			}).fail(function(jqXHR, textStatus, errorThrown) {
 				var runErrorCallback = true;
+				var removeTokenData = false;
 
 				switch (jqXHR.status) {
 					case 400:
@@ -308,6 +309,7 @@ var Artkosoft = Artkosoft || {};
 							// Probably token refresh request failed - run authorization logic
 							clientOptions.authorizeCallback(jqXHR.responseJSON);
 							runErrorCallback = false;
+							removeTokenData = true;
 						}
 						break;
 
@@ -321,13 +323,14 @@ var Artkosoft = Artkosoft || {};
 							// Run authorization logic
 							clientOptions.authorizeCallback(authParams);
 							runErrorCallback = false;
+							removeTokenData = true;
 						} else if (authParams && (authParams.error == 'invalid_token' || authParams.error == 'expired_token') && getRefreshToken()) {
 							removeAccessToken();
 							refreshAccessToken();
 						} else if (!getRefreshToken()) {
 							// Run authorization logic
 							clientOptions.authorizeCallback(jqXHR.responseJSON);
-							runErrorCallback = false;
+							removeTokenData = true;
 						}
 						break;
 
@@ -339,7 +342,8 @@ var Artkosoft = Artkosoft || {};
 				// Call custom error callback
 				if (runErrorCallback) {
 					if (ajaxSettings.errorCallback) ajaxSettings.errorCallback(jqXHR, textStatus, errorThrown);
-				} else {
+				}
+				if (removeTokenData) {
 					// Remove all OAuth 2.0 authorization data from local storage
 					clearTokenData();
 					// Remove refresh token from local storage
